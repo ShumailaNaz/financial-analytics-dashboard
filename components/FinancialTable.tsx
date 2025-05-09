@@ -28,20 +28,24 @@ export default function FinancialTable({ data }: { data: FinancialData }) {
     return monthIndex >= startIndex && monthIndex <= endIndex;
   };
 
-  const rows = ALL_MONTHS.filter(monthInRange).map((month) => {
-    const revenueData = data.revenue.find((r) => r.month === month);
-    const revenue = revenueData ? revenueData.revenue : 0;
+  const availableMonths = data.revenue.map((r) => r.month);
 
-    const expenses = data.expenses.map((e) => `${e.category}: $${e.amount.toLocaleString()}`).join(", ");
-    const profitMargins = filteredProfitMargins.map((p) => `${p.department}: ${p.profitMargin.toFixed(2)}%`).join(", ");
+  const rows = ALL_MONTHS
+    .filter((month) => availableMonths.includes(month) && monthInRange(month))
+    .map((month) => {
+      const revenueData = data.revenue.find((r) => r.month === month);
+      const revenue = revenueData ? revenueData.revenue : 0;
 
-    return {
-      month,
-      revenue,
-      expenses,
-      profitMargins,
-    };
-  });
+      const expenses = data.expenses.map((e) => `${e.category}: $${e.amount.toLocaleString()}`).join(", ");
+      const profitMargins = filteredProfitMargins.map((p) => `${p.department}: ${p.profitMargin.toFixed(2)}%`).join(", ");
+
+      return {
+        month,
+        revenue,
+        expenses,
+        profitMargins,
+      };
+    });
 
   return (
     <div className="space-y-4">
